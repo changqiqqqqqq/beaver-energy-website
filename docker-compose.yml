@@ -1,0 +1,15 @@
+services:
+  website:
+    build: .
+    container_name: beaver-energy-website
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "8931:8931"
+    volumes:
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    environment:
+      CONTACT_DB: /app/data/contacts.db
+      UPLOAD_DIR: /app/uploads
