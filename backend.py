@@ -1,4 +1,4 @@
-import os, sqlite3, uuid, threading
+import os, sqlite3, uuid, threading, hashlib
 from datetime import datetime, timezone
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.responses import FileResponse
@@ -62,9 +62,14 @@ def startup(): db().close()
 @app.post('/api/contact')
 async def create(identity:str=Form('其他'),province:str=Form('未填写'),demand_type:str=Form('其他'),description:str=Form(''),contact:str=Form(...),source:str=Form('官网联系页'),asset_type:str=Form(''),files:list[UploadFile]=File(default=[])):
     if not contact.strip(): raise HTTPException(400,'联系方式不能为空')
+    duplicate_key='|'.join([identity.strip(),province.strip(),demand_type.strip(),description.strip(),contact.strip(),source.strip(),asset_type.strip()])
+    digest=hashlib.sha256(duplicate_key.encode('utf-8')).hexdigest()
+    c=db(); recent=c.execute("SELECT message_id FROM contacts WHERE contact=? AND created_at >= datetime('now','-10 minutes') AND last_error=? ORDER BY id DESC LIMIT 1",(contact.strip(),digest)).fetchone()
+    if recent:
+        c.close(); raise HTTPException(409,'检测到相同需求刚刚已经提交，请勿重复提交。')
     mid='MSG-'+datetime.now().strftime('%Y%m%d')+'-'+uuid.uuid4().hex[:8].upper()
     now=datetime.now(timezone.utc).isoformat(); c=db()
-    c.execute('INSERT INTO contacts(message_id,identity,province,demand_type,description,contact,source,asset_type,created_at) VALUES(?,?,?,?,?,?,?,?,?)',(mid,identity,province,demand_type,description,contact,source,asset_type,now)); c.commit(); c.close()
+    c.execute('INSERT INTO contacts(message_id,identity,province,demand_type,description,contact,source,asset_type,created_at,last_error) VALUES(?,?,?,?,?,?,?,?,?,?)',(mid,identity,province,demand_type,description,contact,source,asset_type,now,digest)); c.commit(); c.close()
     saved=[]
     for f in files or []:
         if not f.filename: continue

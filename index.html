@@ -2724,7 +2724,7 @@ const f=$('#f');if(f)f.onsubmit=async e=>{e.preventDefault();
   try{
     const res=await fetch('/api/contact',{method:'POST',body:payload});
     const data=await res.json();
-    if(!res.ok||!data.success)throw new Error(data.detail||'提交失败');
+    if(!res.ok||!data.success){errMsg.textContent=data.detail||'提交失败';errMsg.style.display='block';btn.disabled=false;btn.textContent='提交需求';return}
     okMsg.textContent='需求已提交，消息编号：'+data.message_id+'。河狸会根据您留下的联系方式与您沟通。';
     okMsg.style.display='block';btn.style.display='none';
   }catch(err){
