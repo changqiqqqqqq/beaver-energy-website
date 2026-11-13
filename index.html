@@ -739,6 +739,9 @@ section[id="e3"]{background:#fff}
   box-sizing:border-box;
 }
 .sec2 > .wrap{width:100%}
+body[data-p="enterprise"],body[data-p="assets"]{scroll-snap-type:y proximity;scroll-padding-top:69px}
+body[data-p="enterprise"] .biz2-ph,body[data-p="enterprise"] .sec2,
+body[data-p="assets"] .biz2-ph,body[data-p="assets"] .sec2{scroll-snap-align:start}
 @media(max-width:640px){
   .biz2-ph,.sec2{min-height:0;display:block}
   .biz2-ph{padding-top:calc(66px + 28px);padding-bottom:40px}
