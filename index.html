@@ -739,7 +739,7 @@ section[id="e3"]{background:#fff}
   box-sizing:border-box;
 }
 .sec2 > .wrap{width:100%}
-body[data-p="enterprise"],body[data-p="assets"]{scroll-snap-type:y proximity;scroll-padding-top:69px}
+html:has(body[data-p="enterprise"]),html:has(body[data-p="assets"]){scroll-snap-type:y mandatory;scroll-padding-top:69px}
 body[data-p="enterprise"] .biz2-ph,body[data-p="enterprise"] .sec2,
 body[data-p="assets"] .biz2-ph,body[data-p="assets"] .sec2{scroll-snap-align:start}
 @media(max-width:640px){
